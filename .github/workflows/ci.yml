@@ -1,0 +1,70 @@
+# CI della Retro Arcade Collection (Unity).
+#
+# 1) logic  — sempre, senza licenze: test NUnit della logica pura + "fuzz" delle scene + screenshot.
+# 2) web    — SOLO su avvio manuale (Actions ▸ CI ▸ Run workflow): build Web con GameCI e
+#             pubblicazione su GitHub Pages. Richiede i secrets UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD
+#             (vedi README, sezione "Build per il Web e GitHub Pages").
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  logic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - name: Test della logica (NUnit)
+        run: dotnet test tools/LogicTests
+      - name: Fuzz delle scene (input casuale, 60 s simulati per seed)
+        run: dotnet run --project tools/PreviewRenderer -c Release -- --fuzz 60
+      - name: Screenshot di tutte le scene
+        run: dotnet run --project tools/PreviewRenderer -c Release -- screenshots
+      - uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: screenshots
+
+  web:
+    if: github.event_name == 'workflow_dispatch'
+    needs: logic
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-Web-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: Library-Web-
+      - uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: WebGL
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/WebGL/WebGL
+
+  deploy:
+    needs: web
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
