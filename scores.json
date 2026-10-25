@@ -2,12 +2,13 @@
   "version": 1,
   "scores": {
     "maze_time_dark": 18.5,
+    "maze_time_large": 50.7,
     "memory_moves_normal": 19,
     "snake": 4,
     "space_invaders": 1030,
-    "tetris": 3527
+    "tetris": 16803
   },
   "settings": {
-    "last_game": 3
+    "last_game": 5
   }
 }

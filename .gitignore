@@ -112,3 +112,13 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# ─── Strumenti .NET fuori da Unity (tools/) ───────────────────────────────────────────────
+# I .csproj in tools/ sono scritti a mano, NON generati da Unity: vanno versionati,
+# altrimenti la CI non trova i progetti ("dotnet test tools/LogicTests" -> errore MSB1009).
+!/tools/**/*.csproj
+# ...ma i loro output di compilazione no.
+/tools/**/[Bb]in/
+/tools/**/[Oo]bj/
+# PNG generati da tools/PreviewRenderer (quelli usati nel README stanno in docs/screenshots).
+/screenshots/

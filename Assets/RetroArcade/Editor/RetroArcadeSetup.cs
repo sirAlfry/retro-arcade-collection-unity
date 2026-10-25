@@ -183,12 +183,17 @@ namespace RetroArcade.EditorTools
             }
         }
 
+        /// <summary>
+        /// Cerca un tipo per nome completo. I due tipi di URP che servono derivano da ScriptableObject, quindi basta
+        /// l'indice dei tipi che l'editor tiene già pronto (TypeCache). Niente AppDomain.GetAssemblies(): in Unity
+        /// può restituire assembly già scaricati dopo un ricaricamento del codice (avviso UAC0005).
+        /// TypeCache esiste in ogni versione di Unity 6 (l'alternativa CurrentAssemblies solo dalla 6.4).
+        /// </summary>
         private static Type FindType(string fullName)
         {
-            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var t in TypeCache.GetTypesDerivedFrom<ScriptableObject>())
             {
-                var t = asm.GetType(fullName, false);
-                if (t != null) return t;
+                if (t.FullName == fullName) return t;
             }
             return null;
         }

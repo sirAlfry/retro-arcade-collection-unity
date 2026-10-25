@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Test della logica pura del gioco con `dotnet test tools/LogicTests`, SENZA aprire Unity.
+
+    Compila i file di Assets/RetroArcade/Logic e Assets/RetroArcade/Tests/EditMode così come sono
+    (sono collegati con <Compile Include>, non copiati) e li esegue con NUnit 3: sono gli stessi test
+    del Test Runner di Unity (Window ▸ General ▸ Test Runner ▸ EditMode).
+
+    ATTENZIONE: il .gitignore di Unity esclude *.csproj (quelli generati dall'editor). Questo file
+    è un'eccezione voluta: vedi la regola "!/tools/**/*.csproj" nel .gitignore.
+  -->
+
+  <PropertyGroup>
+    <!-- Usa il runtime incluso nell'SDK installato: net8.0 con l'SDK 8, net9.0 con il 9, net10.0 con il 10... -->
+    <TargetFramework>net$(BundledNETCoreAppTargetFrameworkVersion)</TargetFramework>
+    <!-- Bloccato a C# 9 come in Unity 6: se scrivi sintassi più nuova, la build fallisce subito. -->
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>RetroArcade.Tests</RootNamespace>
+    <AssemblyName>RetroArcade.LogicTests</AssemblyName>
+    <!-- Unity definisce questo simbolo per gli assembly di test (vedi RetroArcade.Tests.EditMode.asmdef). -->
+    <DefineConstants>$(DefineConstants);UNITY_INCLUDE_TESTS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../../Assets/RetroArcade/Logic/**/*.cs" Link="Logic/%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="../../Assets/RetroArcade/Tests/EditMode/**/*.cs" Link="Tests/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- NUnit 3 come il Test Runner di Unity: NUnit 4 ha spostato Assert.AreEqual & co. in ClassicAssert. -->
+    <PackageReference Include="NUnit" Version="3.14.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="6.3.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
+  </ItemGroup>
+
+</Project>

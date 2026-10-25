@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Screenshot e "fuzz" delle scene SENZA aprire Unity (i comandi esatti sono in tools/README.md;
+    qui non si possono scrivere perché un commento XML non può contenere due trattini di fila).
+
+    Compila le VERE scene C# (Assets/RetroArcade/Runtime + Logic, collegate e non copiate) insieme a:
+      - UnityShim.cs      mini-UnityEngine in puro C# (solo i tipi usati dalle scene);
+      - SoftwareRaster.cs rasterizzatore software che salva PNG.
+    ArcadeApp e CrtPresenter restano fuori perché parlano con la GPU (UnityShim ne fornisce un guscio).
+
+    ATTENZIONE: il .gitignore di Unity esclude *.csproj (quelli generati dall'editor). Questo file
+    è un'eccezione voluta: vedi la regola "!/tools/**/*.csproj" nel .gitignore.
+  -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- Usa il runtime incluso nell'SDK installato: net8.0 con l'SDK 8, net9.0 con il 9, net10.0 con il 10... -->
+    <TargetFramework>net$(BundledNETCoreAppTargetFrameworkVersion)</TargetFramework>
+    <!-- Bloccato a C# 9 come in Unity 6. -->
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>RetroArcade.Preview</RootNamespace>
+    <AssemblyName>PreviewRenderer</AssemblyName>
+    <!-- Nessun RETRO_INPUT_SYSTEM / ENABLE_LEGACY_INPUT_MANAGER: ArcadeInput usa solo l'input iniettato. -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../../Assets/RetroArcade/Logic/**/*.cs" Link="Logic/%(RecursiveDir)%(Filename)%(Extension)" />
+    <Compile Include="../../Assets/RetroArcade/Runtime/**/*.cs"
+             Exclude="../../Assets/RetroArcade/Runtime/Core/ArcadeApp.cs;../../Assets/RetroArcade/Runtime/Core/CrtPresenter.cs"
+             Link="Runtime/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

@@ -99,8 +99,8 @@ Quella in cima applica la stessa formula dello shader `RetroCRT` a uno di questi
 1. **Unity Hub ▸ Projects ▸ Add ▸ Add project from disk** → scegli la cartella `retro-arcade-collection-unity`
    (quella che contiene `Assets`, `Packages`, `ProjectSettings`). Evita percorsi lunghissimi o dentro OneDrive.
 2. **Apri** il progetto. La prima volta ci mette qualche minuto (scarica i package e crea la cartella `Library`).
-3. Se compare *"Enable the new input system backends?"* rispondi **Yes** (l'editor si riavvia). Il gioco funziona comunque
-   anche con il vecchio Input Manager.
+3. Se compare *"Enable the new input system backends?"* rispondi **Yes** (l'editor si riavvia). Il progetto usa solo il
+   nuovo Input System (*Active Input Handling* = **Input System Package (New)**): il vecchio Input Manager è deprecato.
 4. Lo script di setup attiva URP, crea la scena `RetroArcade`, la apre e la mette nelle Build Settings ("Progetto pronto").
 5. Premi ▶ **Play**. Nell'editor `ESC` nel launcher ferma il Play mode, come "Esci" nella versione Python.
 
@@ -127,7 +127,8 @@ Seleziona il GameObject **RetroArcade** nella scena:
 | Sintomo | Causa probabile e rimedio |
 |---|---|
 | Schermo nero o rosa/magenta | Gli shader non sono stati trovati: verifica che esista `Assets/RetroArcade/Resources/RetroArcade/` con i due `.shader` e guarda la Console. |
-| Nessun tasto risponde | *Project Settings ▸ Player ▸ Active Input Handling* punta a un sistema non installato: scegli **Input System Package** o **Both**. |
+| Nessun tasto risponde | *Project Settings ▸ Player ▸ Active Input Handling* punta a un sistema non installato: scegli **Input System Package (New)**. |
+| Avviso *"This project uses Input Manager, which is marked for deprecation"* | *Active Input Handling* è su **Both** o **Input Manager (Old)**: mettilo su **Input System Package (New)** e lascia riavviare l'editor. |
 | Hai modificato uno script ma non cambia niente | Unity ricompila quando la sua finestra torna in primo piano: cliccaci sopra e attendi la rotellina in basso a destra. |
 | I test non compaiono nel Test Runner | Manca il package **Test Framework** (incluso nei template di Unity 6). |
 | La scena non c'è | *Tools ▸ Retro Arcade ▸ Ricrea scena e Build Settings*. |
